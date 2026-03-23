@@ -1,231 +1,591 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CQ Dashboard — Post Sales IB | March 2026</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>CQ Dashboard &middot; Post Sales IB &middot; March 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <style>
-  :root {
-    --primary: #7B2D8B;
-    --primary-light: #9C4DB8;
-    --primary-dark: #5B1668;
-    --accent: #B06ACC;
-    --bg: #f8f4fc;
-    --card: #ffffff;
-    --text: #1a1a2e;
-    --text-muted: #666;
-    --border: #e8d5f0;
-    --success: #2e7d32;
-    --warning: #e65100;
-    --danger: #b71c1c;
-    --shadow: 0 2px 12px rgba(123,45,139,0.10);
-  }
-  [data-theme="dark"] {
-    --bg: #12071a;
-    --card: #1e0f2e;
-    --text: #f0e6f8;
-    --text-muted: #b094c8;
-    --border: #3a1e55;
-    --shadow: 0 2px 12px rgba(0,0,0,0.4);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
+/* ── THEME VARIABLES ── */
+[data-theme="light"] {
+  --navy:#1c2a3a; --navy2:#0f1c2a;
+  --body:#f7f6f2; --surface:#ffffff;
+  --bdr:#e5e0d8; --bdr2:#d4cfc6;
+  --txt:#1a1208; --txt2:#4a3f2f; --txt3:#8a7a60;
+  --card-bg:#ffffff; --card-bdr:#e5e0d8;
+  --section-bdr:#e5e0d8;
+  --ic-bg:#ffffff;
+  --table-row:#ffffff; --table-hover:#faf8f4; --table-total:#f7f5f0;
+  --param-body-bg:#ffffff;
+  --chart-bg:#ffffff;
+  --sh-sm:0 1px 4px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 16px rgba(0,0,0,.09),0 2px 6px rgba(0,0,0,.05);
+  --sh-lg:0 8px 32px rgba(0,0,0,.13),0 4px 12px rgba(0,0,0,.07);
+}
+[data-theme="dark"] {
+  --navy:#a855f7; --navy2:#0a0a14;
+  --body:#0f0f1a; --surface:#1a1a2e;
+  --bdr:#2a2a3e; --bdr2:#3a3a50;
+  --txt:#e8e4f0; --txt2:#b8b0cc; --txt3:#7a7090;
+  --card-bg:#1a1a2e; --card-bdr:#2a2a3e;
+  --section-bdr:#2a2a3e;
+  --ic-bg:#1a1a2e;
+  --table-row:#1a1a2e; --table-hover:#242438; --table-total:#141420;
+  --param-body-bg:#1a1a2e;
+  --chart-bg:#1a1a2e;
+  --sh-sm:0 1px 4px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --sh-md:0 4px 16px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.25);
+  --sh-lg:0 8px 32px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.35);
+}
+:root {
+  --gold:#c8a846; --gold-lt:#e8c86a; --gold-pale:#fffbe6;
+  --green:#16a34a; --green-lt:#22c55e; --green-pale:#f0fdf4;
+  --red:#dc2626; --red-pale:#fef2f2;
+  --orange:#ea580c; --orange-pale:#fff7ed;
+  --blue:#2563eb; --blue-pale:#eff6ff;
+  --purple:#7c3aed; --purple-pale:#f5f3ff;
+}
+[data-theme="dark"] { --gold-pale:#2a2010; --green-pale:#0a1f10; --red-pale:#1f0a0a; --orange-pale:#1f1008; --blue-pale:#0a1020; --purple-pale:#140a20; }
 
-  /* Header */
-  .header {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
-    color: white; padding: 0; position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
-  }
-  .header-inner {
-    max-width: 1200px; margin: 0 auto; padding: 14px 24px;
-    display: flex; align-items: center; gap: 16px;
-  }
-  .header-logo { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .header-logo span { color: #e8bff8; }
-  .header-sub { font-size: 12px; opacity: 0.8; }
-  .header-actions { margin-left: auto; display: flex; gap: 10px; }
-  .btn { border: none; cursor: pointer; padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
-  .btn-white { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
-  .btn-white:hover { background: rgba(255,255,255,0.25); }
-  .btn-export { background: white; color: var(--primary); }
-  .btn-export:hover { background: #f5e8ff; }
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:var(--body);color:var(--txt);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .3s,color .3s;}
 
-  /* Layout */
-  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+/* ── HEADER ── */
+.hdr{background:var(--navy2);border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:900;height:60px;display:flex;align-items:center;padding:0 40px;gap:16px;}
+.hdr-logo-wrap{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.hdr-logo-svg{width:34px;height:34px;flex-shrink:0;}
+.hdr-brand{display:flex;flex-direction:column;}
+.hdr-name{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;line-height:1.2;}
+.hdr-tata{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.hdr-sep{width:1px;height:26px;background:rgba(255,255,255,.12);flex-shrink:0;}
+.hdr-title{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,220,100,.5);flex:1;}
+.hdr-auditor{font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap;}
+.hdr-actions{display:flex;align-items:center;gap:8px;}
+.dm-toggle{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.dm-toggle:hover{background:rgba(255,255,255,.15);color:#fff;}
+.pdf-btn{background:rgba(200,168,70,.12);border:1.5px solid rgba(200,168,70,.4);color:var(--gold);padding:5px 14px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.pdf-btn:hover{background:rgba(200,168,70,.22);color:var(--gold-lt);}
+.hdr-badge{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);border:1.5px solid rgba(200,168,70,.4);padding:4px 12px;border-radius:20px;background:rgba(200,168,70,.08);white-space:nowrap;}
 
-  /* Hero */
-  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 16px; padding: 28px 32px; color: white; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-  .hero-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-  .hero-sub { font-size: 15px; opacity: 0.85; margin-top: 4px; }
-  .hero-stats { display: flex; gap: 24px; flex-wrap: wrap; }
-  .hero-stat { text-align: center; }
-  .hero-stat-val { font-size: 36px; font-weight: 800; line-height: 1; }
-  .hero-stat-label { font-size: 12px; opacity: 0.8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+/* ── HERO ── */
+.hero{background:linear-gradient(160deg,#0a0a18 0%,#1a2436 55%,#1c2e40 100%);padding:52px 0 44px;border-bottom:2px solid var(--gold);text-align:center;position:relative;overflow:hidden;}
+.hero-glow{position:absolute;top:-80px;right:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(200,168,70,.1) 0%,transparent 70%);pointer-events:none;}
+.hero-glow2{position:absolute;bottom:-80px;left:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(168,85,247,.1) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{position:relative;z-index:2;max-width:900px;margin:0 auto;padding:0 40px;}
+.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:inline-flex;align-items:center;gap:10px;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:20px;height:1.5px;background:var(--gold);}
+.hero-title{font-family:Georgia,serif;font-size:clamp(40px,6vw,70px);font-weight:800;color:#a855f7;line-height:.95;letter-spacing:-1px;margin-bottom:6px;animation:heroIn .8s ease both;}
+.hero-date{font-family:Georgia,serif;font-size:clamp(18px,2.5vw,28px);color:rgba(255,255,255,.5);margin-bottom:8px;animation:heroIn .8s .1s ease both;}
+.hero-sub{font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.5px;margin-bottom:36px;animation:heroIn .8s .2s ease both;}
+.hero-stats{display:inline-flex;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;animation:heroIn .8s .3s ease both;}
+.hs{padding:18px 28px;border-right:1px solid rgba(255,255,255,.08);transition:background .2s;}
+.hs:last-child{border-right:none;}
+.hs:hover{background:rgba(255,255,255,.06);}
+.hs-val{font-family:Georgia,serif;font-size:32px;font-weight:800;line-height:1;margin-bottom:4px;}
+.hs-val.gold{color:var(--gold);}.hs-val.green{color:var(--green-lt);}.hs-val.red{color:#f87171;}.hs-val.white{color:#fff;}
+.hs-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+@keyframes heroIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-  /* Section */
-  .section-title { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:0 40px 80px;}
+section{padding:48px 0;text-align:center;}
+section+section{border-top:1px solid var(--section-bdr);}
+.sec-ey{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:inline-flex;align-items:center;gap:10px;}
+.sec-ey::before,.sec-ey::after{content:'';width:14px;height:1.5px;background:var(--gold);}
+.sec-ttl{font-family:Georgia,serif;font-size:clamp(22px,3vw,34px);font-weight:700;color:var(--txt);margin-bottom:6px;}
+.sec-sub{font-size:13px;color:var(--txt3);margin-bottom:28px;line-height:1.65;max-width:600px;margin-left:auto;margin-right:auto;}
 
-  /* Insights */
-  .insights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 28px; }
-  .insight-card { background: var(--card); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--border); border-left: 4px solid var(--primary); }
-  .insight-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
-  .insight-value { font-size: 18px; font-weight: 700; color: var(--text); }
-  .insight-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+/* ── TARGET BANNER ── */
+.target-banner{background:linear-gradient(135deg,#0f1c2a 0%,#1a3050 100%);border:1.5px solid var(--gold);border-radius:14px;padding:22px 28px;margin-bottom:24px;text-align:center;}
+.tb-icon{font-size:28px;margin-bottom:8px;}
+.tb-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.tb-txt{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;max-width:500px;margin:0 auto 18px;}
+.tb-right{display:flex;gap:36px;justify-content:center;}
+.tb-stat{text-align:center;}
+.tb-num{font-family:Georgia,serif;font-size:26px;font-weight:800;line-height:1;}
+.tb-num.gold{color:var(--gold);}.tb-num.green{color:var(--green-lt);}.tb-num.red{color:#f87171;}
+.tb-slbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);}
 
-  /* Scores table */
-  .scores-table-wrap { background: var(--card); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 28px; }
-  .scores-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  .scores-table th { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .scores-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .scores-table tr:last-child td { border-bottom: none; }
-  .scores-table tr:hover td { background: #fdf6ff; cursor: pointer; }
-  .scores-table tr:nth-child(even) td { background: #faf7fc; }
-  .scores-table tr:nth-child(even):hover td { background: #fdf6ff; }
+/* ── SCORE TABLE ── */
+.score-table{width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;box-shadow:var(--sh-md);}
+.score-table thead tr{background:#0f1c2a;}
+.score-table thead th{color:rgba(255,255,255,.6);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:12px 16px;text-align:center;}
+.score-table tbody tr{background:var(--table-row);border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .15s,transform .15s;}
+.score-table tbody tr:hover{background:var(--table-hover);transform:scale(1.002);}
+.score-table tbody tr.total-row{background:var(--table-total);cursor:default;}
+.score-table tbody tr.total-row:hover{background:var(--table-total);transform:none;}
+.score-table tbody td{padding:13px 16px;font-size:14px;text-align:center;vertical-align:middle;}
+.agent-cell{display:flex;align-items:center;justify-content:center;gap:12px;}
+.agent-av{width:36px;height:36px;border-radius:50%;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s;}
+.score-table tbody tr:hover .agent-av{transform:scale(1.1);}
+.agent-nm{font-weight:600;color:var(--txt);font-size:14px;}
+.agent-hint{font-size:10px;color:var(--txt3);margin-top:1px;}
+.total-nm{font-weight:700;color:var(--txt);}
+.ncf-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--green-pale);color:var(--green);font-size:12px;font-weight:700;}
+.ncf-badge.ncf-red{background:var(--red-pale);color:var(--red);width:auto;padding:0 8px;border-radius:12px;}
+.bar-cell{display:flex;align-items:center;justify-content:center;gap:10px;}
+.bar-track{width:90px;height:7px;background:var(--bdr);border-radius:4px;overflow:hidden;flex-shrink:0;}
+.bar-fill{height:100%;border-radius:4px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.bar-gold{background:linear-gradient(90deg,#c8a846,#e8c86a);}
+.bar-green{background:linear-gradient(90deg,#16a34a,#22c55e);}
+.bar-orange{background:linear-gradient(90deg,#ea580c,#fb923c);}
+.pct{font-weight:700;font-size:14px;min-width:38px;text-align:left;}
+.c-gold{color:#b8860b;}.c-green{color:#16a34a;}.c-orange{color:#ea580c;}
+.ti{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;white-space:nowrap;}
+.ti-near{background:var(--gold-pale);color:#92700a;}
+.ti-below{background:var(--red-pale);color:var(--red);}
 
-  .rank-badge { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
-  .agent-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
-  .agent-name-cell { display: flex; align-items: center; gap: 10px; }
-  .cq-bar-wrap { display: flex; align-items: center; gap: 8px; }
-  .cq-bar-bg { background: #f0e4f8; border-radius: 6px; height: 8px; flex: 1; min-width: 80px; overflow: hidden; }
-  .cq-bar-fill { height: 100%; border-radius: 6px; }
-  .cq-val { font-weight: 700; font-size: 14px; min-width: 38px; }
-  .ncf-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-  .ncf-0 { background: #e8f5e9; color: #2e7d32; }
-  .ncf-pos { background: #ffebee; color: #b71c1c; }
-  .view-btn { background: var(--primary); color: white; border: none; padding: 5px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; white-space: nowrap; }
-  .view-btn:hover { background: var(--primary-dark); }
+/* ── INSIGHT CARDS ── */
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;}
+.insight-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;}
+.insight-grid-2 .ic{text-align:center;}
+.ic{background:var(--ic-bg);border:1.5px solid var(--card-bdr);border-top:3px solid var(--ic-accent,var(--card-bdr));border-radius:14px;padding:20px;box-shadow:var(--sh-sm);text-align:center;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;}
+.ic:hover{transform:translateY(-5px) scale(1.02);box-shadow:var(--sh-md);}
+.ic.gold{--ic-accent:var(--gold);}.ic.green{--ic-accent:var(--green);}.ic.red{--ic-accent:var(--red);}.ic.orange{--ic-accent:var(--orange);}.ic.blue{--ic-accent:var(--blue);}.ic.purple{--ic-accent:var(--purple);}
+.ic-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;}
+.ic-val{font-family:Georgia,serif;font-size:38px;font-weight:800;line-height:1;margin-bottom:6px;}
+.ic-val.gold{color:var(--gold);}.ic-val.green{color:var(--green);}.ic-val.red{color:var(--red);}.ic-val.orange{color:var(--orange);}.ic-val.blue{color:var(--blue);}.ic-val.purple{color:var(--purple);}
+.ic-sub{font-size:12px;color:var(--txt3);line-height:1.55;}
 
-  /* Params accordion */
-  .params-section { margin-bottom: 28px; }
-  .param-accordion { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 10px; }
-  .param-header { padding: 14px 18px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; transition: background 0.2s; }
-  .param-header:hover { background: #fdf6ff; }
-  .param-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-  .param-title { font-weight: 700; font-size: 14px; flex: 1; }
-  .param-total { font-size: 13px; color: var(--text-muted); }
-  .param-chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
-  .param-body { display: none; padding: 0 18px 16px; }
-  .param-body.open { display: block; }
-  .param-agent-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); }
-  .param-agent-row:last-child { border-bottom: none; }
-  .param-agent-name { width: 140px; font-size: 13px; font-weight: 600; }
-  .param-agent-bar-bg { flex: 1; background: #f0e4f8; border-radius: 4px; height: 8px; }
-  .param-agent-bar-fill { height: 100%; border-radius: 4px; }
-  .param-agent-count { width: 30px; text-align: right; font-size: 13px; font-weight: 700; color: var(--primary); }
-  .view-cases-btn { font-size: 11px; background: var(--primary); color: white; border: none; padding: 3px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
-  .view-cases-btn:hover { background: var(--primary-dark); }
+/* ── PARAM BREAKDOWN ── */
+.param-block{margin-bottom:10px;border-radius:12px;overflow:hidden;box-shadow:var(--sh-sm);}
+.param-hdr{background:#0f1c2a;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .15s;}
+.param-hdr:hover{background:#1a2e44;}
+.param-hdr-name{font-size:13px;font-weight:600;color:#fff;}
+.param-hdr-right{display:flex;align-items:center;gap:12px;}
+.param-hdr-count{font-family:Georgia,serif;font-size:20px;font-weight:700;color:var(--gold);}
+.param-arrow{color:rgba(255,255,255,.5);font-size:12px;transition:transform .25s;display:inline-block;}
+.param-body{background:var(--param-body-bg);border:1px solid var(--bdr);border-top:none;display:none;}
+.param-body.open{display:block;}
+.param-agent-row{display:grid;grid-template-columns:1fr 60px 120px;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .15s;text-align:center;}
+.param-agent-row:last-child{border-bottom:none;}
+.param-agent-row:hover{background:var(--table-hover);}
+.par-name{font-size:14px;font-weight:500;color:var(--txt);text-align:center;}
+.par-count{font-family:Georgia,serif;font-size:22px;font-weight:700;text-align:center;}
+.par-count.c5,.par-count.c4{color:var(--red);}.par-count.c3{color:var(--orange);}.par-count.c2,.par-count.c1{color:var(--blue);}
+.par-btn{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);padding:5px 12px;border:1.5px solid rgba(200,168,70,.35);border-radius:8px;background:transparent;cursor:pointer;text-align:center;transition:all .15s;}
+.par-btn:hover{background:var(--gold-pale);transform:scale(1.05);}
 
-  /* Charts */
-  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
-  .chart-card { background: var(--card); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-  .chart-card.full { grid-column: 1 / -1; }
+/* ── CHARTS ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+.chart-card{background:var(--chart-bg);border:1.5px solid var(--card-bdr);border-radius:14px;padding:22px 22px 18px;box-shadow:var(--sh-sm);text-align:left;transition:transform .2s,box-shadow .2s;}
+.chart-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.heatmap-card{background:var(--chart-bg);border:1.5px solid var(--card-bdr);border-radius:14px;padding:22px 22px 18px;box-shadow:var(--sh-sm);transition:transform .2s,box-shadow .2s;}
+.heatmap-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.cc-title{font-family:Georgia,serif;font-size:17px;font-weight:700;color:var(--txt);margin-bottom:3px;}
+.cc-sub{font-size:11px;color:var(--txt3);margin-bottom:14px;line-height:1.4;}
+.ch{position:relative;width:100%;height:230px;}
+.ch canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}
 
-  /* Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-  .modal-box { background: var(--card); border-radius: 14px; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 48px rgba(0,0,0,0.3); position: relative; }
-  .modal-close { position: absolute; top: 14px; right: 16px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; }
-  .modal-close:hover { background: rgba(255,255,255,0.35); }
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+#modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border-radius:20px;max-width:660px;width:95%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;transform:scale(.95) translateY(10px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--sh-lg),0 20px 60px rgba(0,0,0,.2);}
+#modal-overlay.open .modal{transform:scale(1) translateY(0);}
+.modal-top{background:#0f1c2a;padding:26px 30px 22px;position:relative;flex-shrink:0;}
+.modal-top::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;}
+.modal-close:hover{background:rgba(255,255,255,.2);color:#fff;transform:rotate(90deg);}
+#m-name{font-family:Georgia,serif;font-size:30px;font-weight:800;color:#fff;line-height:1;margin-bottom:2px;}
+#m-role{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;}
+#m-metrics{display:flex;gap:8px;flex-wrap:wrap;}
+.mm{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;text-align:center;min-width:68px;transition:background .2s;}
+.mm:hover{background:rgba(255,255,255,.12);}
+.mm-val{font-family:Georgia,serif;font-size:24px;font-weight:800;line-height:1;}
+.mm-val.gold{color:var(--gold);}.mm-val.green{color:var(--green-lt);}.mm-val.orange{color:#fb923c;}.mm-val.red{color:#f87171;}.mm-val.white{color:#fff;}
+.mm-lbl{font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:3px;}
+#m-body{overflow-y:auto;padding:22px 28px 24px;flex:1;background:var(--surface);}
+.modal-sec-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
+.modal-sec-lbl::before,.modal-sec-lbl::after{content:'';flex:1;height:1px;background:var(--bdr);}
+.gauge-wrap{display:flex;align-items:center;gap:14px;background:var(--body);border:1px solid var(--bdr);border-radius:12px;padding:14px 18px;margin-bottom:4px;}
+.gauge-track{height:10px;background:var(--bdr);border-radius:6px;overflow:hidden;position:relative;margin-bottom:4px;}
+.gauge-target{position:absolute;top:-2px;bottom:-2px;width:2px;border-radius:2px;}
+.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);}
+.param-mini-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.pmg-item{background:var(--body);border:1px solid var(--bdr);border-radius:10px;padding:10px 8px;text-align:center;transition:transform .2s;}
+.pmg-item:hover{transform:scale(1.05);}
+.pmg-item.pmg-hl{border-color:var(--gold);background:var(--gold-pale);}
+.pmg-val{font-family:Georgia,serif;font-size:22px;font-weight:800;line-height:1;}
+.pmg-lbl{font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--txt3);margin-top:3px;}
+.aoi-list{display:flex;flex-direction:column;gap:8px;}
+.aoi-item{background:var(--body);border:1px solid var(--bdr);border-left:3px solid #ccc;border-radius:0 10px 10px 0;padding:11px 14px;transition:transform .15s;}
+.aoi-item:hover{transform:translateX(4px);}
+.aoi-cat{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.aoi-text{font-size:13px;color:var(--txt2);line-height:1.55;}
+.case-card{background:var(--body);border:1px solid var(--bdr);border-left:3px solid var(--bdr2);border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:8px;transition:border-left-color .2s,transform .15s;}
+.case-card:hover{transform:translateX(3px);}
+.case-card.case-hl{border-left-color:var(--gold);background:var(--gold-pale);}
+.case-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;}
+.case-query{font-size:13px;font-weight:600;color:var(--txt);flex:1;}
+.case-flag{font-size:10px;color:var(--gold);font-weight:700;margin-left:4px;}
+.case-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+.csb-high{background:var(--green-pale);color:var(--green);}.csb-mid{background:var(--gold-pale);color:#92700a;}.csb-low{background:var(--red-pale);color:var(--red);}
+.case-text{font-size:12.5px;color:var(--txt2);line-height:1.6;}
+.better-box{background:var(--body);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;}
+.better-item{font-size:13px;color:var(--txt2);line-height:1.6;padding:5px 0 5px 16px;position:relative;border-bottom:1px dotted var(--bdr);}
+.better-item:last-child{border-bottom:none;}
+.better-arrow{position:absolute;left:0;color:var(--gold);}
 
-  /* Footer */
-  .footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 20px; }
+/* ── FOOTER ── */
+.footer{background:#0f1c2a;border-top:2px solid var(--gold);padding:26px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.ft-left{display:flex;align-items:center;gap:10px;}
+.ft-brand{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);}
+.ft-tata{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);text-transform:uppercase;}
+.ft-right{text-align:right;font-size:11px;color:rgba(255,255,255,.3);line-height:1.9;}
+.ft-right strong{color:rgba(255,255,255,.5);}
 
-  @media (max-width: 700px) {
-    .hero { flex-direction: column; }
-    .charts-grid { grid-template-columns: 1fr; }
-    .hero-stats { gap: 16px; }
-    .scores-table th:nth-child(n+4), .scores-table td:nth-child(n+4) { display: none; }
-  }
-  @media print {
-    .header-actions, .view-btn, .view-cases-btn { display: none; }
-    .modal-overlay { display: none !important; }
-  }
+@media(max-width:700px){
+  .hdr,.hero-inner,.main,.footer{padding-left:16px;padding-right:16px;}
+  .hdr-auditor{display:none;}
+  .hero-stats{flex-wrap:wrap;}
+  .insight-grid,.insight-grid-2,.chart-grid{grid-template-columns:1fr;}
+  .param-mini-grid{grid-template-columns:repeat(3,1fr);}
+  .ch{height:200px;}
+}
+@media print{
+  .hdr{position:relative;}
+  .hdr-actions{display:none;}
+  #modal-overlay{display:none;}
+  body{background:#fff;color:#000;}
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="header-logo">CaratLane <span>| CQ Dashboard</span></div>
-      <div class="header-sub">Post Sales IB · March 2026</div>
-    </div>
-    <div class="header-actions">
-      <button class="btn btn-white" onclick="toggleTheme()">🌙 Dark Mode</button>
-      <button class="btn btn-export" onclick="window.print()">📥 Export PDF</button>
+<!-- HEADER -->
+<header class="hdr" id="hdr">
+  <div class="hdr-logo-wrap">
+    <svg class="hdr-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border-radius:6px;padding:3px;">
+      <g transform="translate(50,50)">
+        <g fill="#7B2D8B">
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(0)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(40)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(80)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(120)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(160)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(200)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(240)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(280)"/>
+          <polygon points="0,-20 5,-9 -5,-9" transform="rotate(320)"/>
+        </g>
+      </g>
+    </svg>
+    <div class="hdr-brand">
+      <div class="hdr-name">CaratLane</div>
+      <div class="hdr-tata">A Tata Product</div>
     </div>
   </div>
-</div>
+  <div class="hdr-sep"></div>
+  <div class="hdr-title">CQ Dashboard &nbsp;&middot;&nbsp; Post Sales IB &nbsp;&middot;&nbsp; March 2026</div>
+  <div class="hdr-auditor">Auditor: Vidhi &amp; Vignesh</div>
+  <div class="hdr-actions">
+    <button class="pdf-btn" onclick="window.print()">&#11015; Export PDF</button>
+    <button class="dm-toggle" id="dmBtn" onclick="toggleDark()">&#127769; Dark Mode</button>
+    <div class="hdr-badge">MTD Report</div>
+  </div>
+</header>
 
-<!-- Main -->
-<div class="container">
-
-  <!-- Hero -->
-  <div class="hero">
-    <div>
-      <div class="hero-title">Post Sales IB Team</div>
-      <div class="hero-sub">March 2026 · Quality Report · Audited by Vidhi & Vignesh</div>
-    </div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Quality Assurance &nbsp;&middot;&nbsp; Post Sales IB</div>
+    <div class="hero-title">CQ <span style="font-style:italic;">Dashboard</span></div>
+    <div class="hero-date">March 2026</div>
+    <div class="hero-sub">200 audits &nbsp;&middot;&nbsp; 9 agents &nbsp;&middot;&nbsp; Audited by Vidhi &amp; Vignesh</div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-val" id="stat-audits">0</div><div class="hero-stat-label">Total Audits</div></div>
-      <div class="hero-stat"><div class="hero-stat-val" id="stat-cq">0%</div><div class="hero-stat-label">Team CQ</div></div>
-      <div class="hero-stat"><div class="hero-stat-val" id="stat-target">95%</div><div class="hero-stat-label">Target</div></div>
-      <div class="hero-stat"><div class="hero-stat-val" id="stat-ncf">0</div><div class="hero-stat-label">NCF Count</div></div>
+      <div class="hs"><div class="hs-val white" data-countup="200">200</div><div class="hs-lbl">Total Audits</div></div>
+      <div class="hs"><div class="hs-val gold" data-countup="86" data-suffix="%">86%</div><div class="hs-lbl">Team CQ</div></div>
+      <div class="hs"><div class="hs-val white" data-countup="95" data-suffix="%">95%</div><div class="hs-lbl">Team Target</div></div>
+      <div class="hs"><div class="hs-val red" data-countup="11">11</div><div class="hs-lbl">NCF</div></div>
+      <div class="hs"><div class="hs-val red" data-countup="227">227</div><div class="hs-lbl">Total Errors</div></div>
     </div>
-  </div>
-
-  <!-- Team Insights -->
-  <div class="section-title">🔍 Team Insights</div>
-  <div class="insights-grid" id="insightsGrid"></div>
-
-  <!-- Agent Scores -->
-  <div class="section-title">🏆 Agent CQ Scores</div>
-  <div class="scores-table-wrap">
-    <table class="scores-table" id="scoresTable">
-      <thead><tr>
-        <th>Rank</th>
-        <th>Agent</th>
-        <th>Audits</th>
-        <th>NCF</th>
-        <th>CQ Score</th>
-        <th>Action</th>
-      </tr></thead>
-      <tbody id="scoresBody"></tbody>
-    </table>
-  </div>
-
-  <!-- Parameter Breakdown -->
-  <div class="params-section">
-    <div class="section-title">📊 Parameter Breakdown</div>
-    <div id="paramsAccordion"></div>
-  </div>
-
-  <!-- Charts -->
-  <div class="section-title">📈 Analytics</div>
-  <div class="charts-grid">
-    <div class="chart-card"><canvas id="cqChart" height="260"></canvas></div>
-    <div class="chart-card"><canvas id="errorDistChart" height="260"></canvas></div>
-    <div class="chart-card"><canvas id="agentErrorChart" height="200"></canvas></div>
-    <div class="chart-card">
-      <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--primary)">JC Wise Error Count</div>
-      <div id="heatmapTable"></div>
-    </div>
-  </div>
-
-  <div class="footer">
-    CaratLane — A Tata Product · Post Sales IB · CQ Dashboard · March 2026<br>
-    Audited by Vidhi & Vignesh · <a href="#" style="color:var(--primary)">View Full Report</a>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="agentModal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalContent"></div>
+<div class="main">
+
+  <!-- AGENT SCORES -->
+  <section>
+    <div class="sec-ey">Agent Performance</div>
+    <div class="sec-ttl">Individual CQ Scores</div>
+    <div class="sec-sub">Click any agent row to view their full report &mdash; AOIs, case-level comments, and parameter breakdown.</div>
+
+    <div class="target-banner">
+      <div class="tb-icon">&#127919;</div>
+      <div class="tb-lbl">Team Target</div>
+      <div class="tb-txt">Individual target: <strong style="color:var(--gold-lt)">90%</strong> &nbsp;&middot;&nbsp; Team target: <strong style="color:var(--gold)">95%</strong>. Agents in the 90%+ range are setting the standard. Everyone below their individual target has room to grow.</div>
+      <div class="tb-right">
+        <div class="tb-stat"><div class="tb-num green">1</div><div class="tb-slbl">At Target</div></div>
+        <div class="tb-stat"><div class="tb-num gold">3</div><div class="tb-slbl">90%+ Range</div></div>
+        <div class="tb-stat"><div class="tb-num red">6</div><div class="tb-slbl">Below 90%</div></div>
+      </div>
+    </div>
+
+    <table class="score-table">
+      <thead>
+        <tr><th>Agent</th><th>Audits</th><th>NCF</th><th>CQ Score</th><th>vs Target</th></tr>
+      </thead>
+      <tbody>
+        <tr onclick="openModal('juwairiyaa')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#b8860b;">JA</div><div><div class="agent-nm">Juwairiya_A</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>25</td><td><span class="ncf-badge">0</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-gold" data-width="95"></div></div><span class="pct c-gold">95%</span></div></td>
+          <td><span class="ti ti-near">+0% above target</span></td>
+        </tr>
+        <tr onclick="openModal('asrarahmedp')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#16a34a;">AP</div><div><div class="agent-nm">Asrarahmed_P</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>25</td><td><span class="ncf-badge">0</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-gold" data-width="90"></div></div><span class="pct c-gold">90%</span></div></td>
+          <td><span class="ti ti-below">-5% to target</span></td>
+        </tr>
+        <tr onclick="openModal('mallikar')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#2563eb;">MR</div><div><div class="agent-nm">Mallika_R</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>8</td><td><span class="ncf-badge">0</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-gold" data-width="90"></div></div><span class="pct c-gold">90%</span></div></td>
+          <td><span class="ti ti-below">-5% to target</span></td>
+        </tr>
+        <tr onclick="openModal('oindrillad')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#7c3aed;">OD</div><div><div class="agent-nm">Oindrilla_D</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>21</td><td><span class="ncf-badge ncf-red">1</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="88"></div></div><span class="pct c-green">88%</span></div></td>
+          <td><span class="ti ti-below">-7% to target</span></td>
+        </tr>
+        <tr onclick="openModal('thejab')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#ea580c;">TB</div><div><div class="agent-nm">Theja_B</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>25</td><td><span class="ncf-badge ncf-red">1</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="87"></div></div><span class="pct c-green">87%</span></div></td>
+          <td><span class="ti ti-below">-8% to target</span></td>
+        </tr>
+        <tr onclick="openModal('nitheeshr')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#dc2626;">NR</div><div><div class="agent-nm">Nitheesh_R</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>24</td><td><span class="ncf-badge ncf-red">1</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="84"></div></div><span class="pct c-green">84%</span></div></td>
+          <td><span class="ti ti-below">-11% to target</span></td>
+        </tr>
+        <tr onclick="openModal('muzakirn')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#0891b2;">MN</div><div><div class="agent-nm">Muzakir_N</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>24</td><td><span class="ncf-badge ncf-red">2</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="83"></div></div><span class="pct c-green">83%</span></div></td>
+          <td><span class="ti ti-below">-12% to target</span></td>
+        </tr>
+        <tr onclick="openModal('mazian')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#be185d;">MN</div><div><div class="agent-nm">Mazia_N</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>24</td><td><span class="ncf-badge ncf-red">2</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="81"></div></div><span class="pct c-green">81%</span></div></td>
+          <td><span class="ti ti-below">-14% to target</span></td>
+        </tr>
+        <tr onclick="openModal('chanchals')">
+          <td><div class="agent-cell"><div class="agent-av" style="background:#6d28d9;">CS</div><div><div class="agent-nm">Chanchal_S</div><div class="agent-hint">Click to view full report &rarr;</div></div></div></td>
+          <td>24</td><td><span class="ncf-badge ncf-red">4</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="80"></div></div><span class="pct c-green">80%</span></div></td>
+          <td><span class="ti ti-below">-15% to target</span></td>
+        </tr>
+        <tr class="total-row">
+          <td><span class="total-nm">Grand Total</span></td>
+          <td>200</td><td><span class="ncf-badge ncf-red">11</span></td>
+          <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill bar-green" data-width="86"></div></div><span class="pct c-green">86%</span></div></td>
+          <td><span class="ti ti-below">-9% to target</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- KEY OBSERVATIONS -->
+  <section>
+    <div class="sec-ey">Team Insights</div>
+    <div class="sec-ttl">Key Observations</div>
+    <div class="sec-sub">At-a-glance team health, top performers, biggest gaps, and risk flags.</div>
+    <div class="insight-grid">
+      <div class="ic gold"><div class="ic-label">&#11088; Top Performers</div><div class="ic-val gold">95%</div><div class="ic-sub"><strong>Juwairiya_A, Asrarahmed_P</strong> lead the team &mdash; Juwairiya_A at 95% and Asrarahmed_P at 90%, closest to the 95% target.</div></div>
+      <div class="ic green"><div class="ic-label">&#10003; Zero NCF</div><div class="ic-val green">3</div><div class="ic-sub">3 agent(s) maintained zero Non CaratLane Friendly cases this month. <strong>Juwairiya_A, Asrarahmed_P, Mallika_R</strong>.</div></div>
+      <div class="ic red"><div class="ic-label">&#9888; Needs Attention</div><div class="ic-val red">80%</div><div class="ic-sub"><strong>Chanchal_S</strong> &mdash; lowest CQ, 15% below target with 4 NCF. Focused coaching required.</div></div>
+      <div class="ic orange"><div class="ic-label">&#128308; Most Error-Prone Parameter</div><div class="ic-val orange">131</div><div class="ic-sub"><strong>Soft Skills</strong> &mdash; 131 total errors team-wide. Empathy, ownership &amp; tone are primary contributors.</div></div>
+      <div class="ic blue"><div class="ic-label">&#128202; Avg Gap to Target</div><div class="ic-val blue">-9%</div><div class="ic-sub">Team average is 86% vs 95% target. 9% consistent improvement needed across all agents.</div></div>
+      <div class="ic purple"><div class="ic-label">&#127991; Tagging Errors</div><div class="ic-val purple">12</div><div class="ic-sub"><strong>Tagging</strong> &mdash; 12 errors this month. Needs focus on correct disposition and IVR tagging.</div></div>
+    </div>
+    <div class="insight-grid-2">
+      <div class="ic gold">
+        <div class="ic-label">&#128204; JCs Ranked by Total Errors</div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;justify-content:center;align-items:center;gap:12px;font-size:13px;"><span style="font-weight:600;color:var(--txt)">Chanchal_S</span><span style="font-weight:700;color:var(--red);">41 errors</span></div>
+          <div style="display:flex;justify-content:center;align-items:center;gap:12px;font-size:13px;"><span style="font-weight:600;color:var(--txt)">Mazia_N</span><span style="font-weight:700;color:var(--red);">38 errors</span></div>
+          <div style="display:flex;justify-content:center;align-items:center;gap:12px;font-size:13px;"><span style="font-weight:600;color:var(--txt)">Muzakir_N</span><span style="font-weight:700;color:var(--red);">36 errors</span></div>
+          <div style="display:flex;justify-content:center;align-items:center;gap:12px;font-size:13px;"><span style="font-weight:600;color:var(--txt)">Nitheesh_R</span><span style="font-weight:700;color:var(--red);">35 errors</span></div>
+          <div style="display:flex;justify-content:center;align-items:center;gap:12px;font-size:13px;"><span style="font-weight:600;color:var(--txt)">Theja_B</span><span style="font-weight:700;color:var(--orange);">28 errors</span></div>
+        </div>
+      </div>
+      <div class="ic blue">
+        <div class="ic-label">&#127919; Biggest Gap Per JC</div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;text-align:center;">
+          <div style="font-size:13px;color:var(--txt2);"><strong>Chanchal_S</strong> &mdash; Soft Skills (20 errors)</div>
+          <div style="font-size:13px;color:var(--txt2);"><strong>Mazia_N</strong> &mdash; Soft Skills (24 errors)</div>
+          <div style="font-size:13px;color:var(--txt2);"><strong>Muzakir_N</strong> &mdash; Soft Skills (20 errors)</div>
+          <div style="font-size:13px;color:var(--txt2);"><strong>Nitheesh_R</strong> &mdash; Soft Skills (25 errors)</div>
+          <div style="font-size:13px;color:var(--txt2);"><strong>Theja_B</strong> &mdash; Soft Skills (15 errors)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARAMETER BREAKDOWN -->
+  <section>
+    <div class="sec-ey">Error Analysis</div>
+    <div class="sec-ttl">Parameter-wise Error Breakdown</div>
+    <div class="sec-sub">Click a parameter header to expand. Click an agent row to open their full report with those cases highlighted.</div>
+
+    <div class="param-block">
+      <div class="param-hdr" onclick="toggleParam('ss')">
+        <span class="param-hdr-name">Soft Skills</span>
+        <div class="param-hdr-right"><span class="param-hdr-count">131 errors</span><span class="param-arrow" id="parr-ss">&#9660;</span></div>
+      </div>
+      <div class="param-body" id="pbody-ss">
+        <div class="param-agent-row" onclick="openModal('nitheeshr','ss')"><span class="par-name">Nitheesh_R</span><span class="par-count c5">25</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mazian','ss')"><span class="par-name">Mazia_N</span><span class="par-count c5">24</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('muzakirn','ss')"><span class="par-name">Muzakir_N</span><span class="par-count c5">20</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('chanchals','ss')"><span class="par-name">Chanchal_S</span><span class="par-count c5">20</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('thejab','ss')"><span class="par-name">Theja_B</span><span class="par-count c5">15</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('asrarahmedp','ss')"><span class="par-name">Asrarahmed_P</span><span class="par-count c5">10</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('oindrillad','ss')"><span class="par-name">Oindrilla_D</span><span class="par-count c5">10</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('juwairiyaa','ss')"><span class="par-name">Juwairiya_A</span><span class="par-count c5">5</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mallikar','ss')"><span class="par-name">Mallika_R</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+      </div>
+    </div>
+
+    <div class="param-block">
+      <div class="param-hdr" onclick="toggleParam('sol')">
+        <span class="param-hdr-name">Solution & Recommendation</span>
+        <div class="param-hdr-right"><span class="param-hdr-count">41 errors</span><span class="param-arrow" id="parr-sol">&#9660;</span></div>
+      </div>
+      <div class="param-body" id="pbody-sol">
+        <div class="param-agent-row" onclick="openModal('chanchals','sol')"><span class="par-name">Chanchal_S</span><span class="par-count c5">9</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mazian','sol')"><span class="par-name">Mazia_N</span><span class="par-count c5">8</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('muzakirn','sol')"><span class="par-name">Muzakir_N</span><span class="par-count c5">6</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('oindrillad','sol')"><span class="par-name">Oindrilla_D</span><span class="par-count c5">5</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('nitheeshr','sol')"><span class="par-name">Nitheesh_R</span><span class="par-count c4">4</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('asrarahmedp','sol')"><span class="par-name">Asrarahmed_P</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('thejab','sol')"><span class="par-name">Theja_B</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('juwairiyaa','sol')"><span class="par-name">Juwairiya_A</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mallikar','sol')"><span class="par-name">Mallika_R</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+      </div>
+    </div>
+
+    <div class="param-block">
+      <div class="param-hdr" onclick="toggleParam('prob')">
+        <span class="param-hdr-name">Probing</span>
+        <div class="param-hdr-right"><span class="param-hdr-count">24 errors</span><span class="param-arrow" id="parr-prob">&#9660;</span></div>
+      </div>
+      <div class="param-body" id="pbody-prob">
+        <div class="param-agent-row" onclick="openModal('chanchals','prob')"><span class="par-name">Chanchal_S</span><span class="par-count c5">5</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('thejab','prob')"><span class="par-name">Theja_B</span><span class="par-count c4">4</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('muzakirn','prob')"><span class="par-name">Muzakir_N</span><span class="par-count c4">4</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mazian','prob')"><span class="par-name">Mazia_N</span><span class="par-count c4">4</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('asrarahmedp','prob')"><span class="par-name">Asrarahmed_P</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('nitheeshr','prob')"><span class="par-name">Nitheesh_R</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mallikar','prob')"><span class="par-name">Mallika_R</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('oindrillad','prob')"><span class="par-name">Oindrilla_D</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+      </div>
+    </div>
+
+    <div class="param-block">
+      <div class="param-hdr" onclick="toggleParam('fu')">
+        <span class="param-hdr-name">Follow Up</span>
+        <div class="param-hdr-right"><span class="param-hdr-count">19 errors</span><span class="param-arrow" id="parr-fu">&#9660;</span></div>
+      </div>
+      <div class="param-body" id="pbody-fu">
+        <div class="param-agent-row" onclick="openModal('muzakirn','fu')"><span class="par-name">Muzakir_N</span><span class="par-count c5">6</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('thejab','fu')"><span class="par-name">Theja_B</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('chanchals','fu')"><span class="par-name">Chanchal_S</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('nitheeshr','fu')"><span class="par-name">Nitheesh_R</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('mazian','fu')"><span class="par-name">Mazia_N</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('juwairiyaa','fu')"><span class="par-name">Juwairiya_A</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('asrarahmedp','fu')"><span class="par-name">Asrarahmed_P</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('oindrillad','fu')"><span class="par-name">Oindrilla_D</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+      </div>
+    </div>
+
+    <div class="param-block">
+      <div class="param-hdr" onclick="toggleParam('tag')">
+        <span class="param-hdr-name">Tagging</span>
+        <div class="param-hdr-right"><span class="param-hdr-count">12 errors</span><span class="param-arrow" id="parr-tag">&#9660;</span></div>
+      </div>
+      <div class="param-body" id="pbody-tag">
+        <div class="param-agent-row" onclick="openModal('chanchals','tag')"><span class="par-name">Chanchal_S</span><span class="par-count c4">4</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('thejab','tag')"><span class="par-name">Theja_B</span><span class="par-count c3">3</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('oindrillad','tag')"><span class="par-name">Oindrilla_D</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('nitheeshr','tag')"><span class="par-name">Nitheesh_R</span><span class="par-count c2">2</span><button class="par-btn">View Cases</button></div>
+        <div class="param-agent-row" onclick="openModal('asrarahmedp','tag')"><span class="par-name">Asrarahmed_P</span><span class="par-count c1">1</span><button class="par-btn">View Cases</button></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CHARTS -->
+  <section>
+    <div class="sec-ey">Visual Analysis</div>
+    <div class="sec-ttl">Charts &amp; Distribution</div>
+    <div class="sec-sub">Visual breakdown of CQ scores, error distribution, agent errors, and JC-wise error count.</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="cc-title">CQ Score vs Target</div>
+        <div class="cc-sub">Agent scores vs team target (95%) &mdash; sorted high to low</div>
+        <div class="ch"><canvas id="scoreChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="cc-title">Error Distribution</div>
+        <div class="cc-sub">Total errors split by parameter category</div>
+        <div class="ch"><canvas id="errorChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="cc-title">Errors per JC</div>
+        <div class="cc-sub">Total audit errors by JC &mdash; stacked by parameter</div>
+        <div class="ch"><canvas id="agentErrorChart"></canvas></div>
+      </div>
+      <div class="heatmap-card">
+        <div class="cc-title">JC Wise Error Count</div>
+        <div class="cc-sub">JC &times; parameter breakdown &mdash; spot who struggles where at a glance</div>
+        <div id="heatmapContainer"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ft-left">
+    <svg width="28" height="28" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border-radius:4px;padding:2px;flex-shrink:0;">
+      <g transform="translate(50,50)"><g fill="#7B2D8B">
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(0)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(40)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(80)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(120)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(160)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(200)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(240)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(280)"/>
+        <polygon points="0,-20 5,-9 -5,-9" transform="rotate(320)"/>
+      </g></g>
+    </svg>
+    <div><div class="ft-brand">CaratLane</div><div class="ft-tata">A Tata Product</div></div>
+  </div>
+  <div class="ft-right"><strong>CQ Dashboard &mdash; Post Sales IB</strong><br>March 2026 &middot; 200 Audits<br>Auditor: <strong>Vidhi &amp; Vignesh</strong> &middot; Quality Analysts</div>
+</footer>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      <div id="m-name"></div>
+      <div id="m-role"></div>
+      <div id="m-metrics"></div>
+    </div>
+    <div id="m-body"></div>
   </div>
 </div>
 
@@ -233,127 +593,68 @@
 <script src="modal.js"></script>
 <script src="charts.js"></script>
 <script>
-  // Animate counter
-  function animateCount(el, target, suffix = '') {
-    let start = 0;
-    const step = Math.ceil(target / 40);
-    const timer = setInterval(() => {
-      start = Math.min(start + step, target);
-      el.textContent = start + suffix;
-      if (start >= target) clearInterval(timer);
-    }, 30);
+function toggleDark() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('dmBtn').textContent = isDark ? '&#127769; Dark Mode' : '&#9728;&#65039; Light Mode';
+  localStorage.setItem('cq-theme', isDark ? 'light' : 'dark');
+}
+(function() {
+  const saved = localStorage.getItem('cq-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('dmBtn');
+      if (btn) btn.textContent = '&#9728;&#65039; Light Mode';
+    });
   }
+})();
 
-  function buildDashboard() {
-    const agents = Object.values(AGENTS);
-    const sorted = [...agents].sort((a, b) => b.cq - a.cq);
-    const totalAudits = agents.reduce((s, a) => s + a.audits, 0);
-    const totalNCF = agents.reduce((s, a) => s + a.ncf, 0);
-    const teamCQ = Math.round(agents.reduce((s, a) => s + a.cq, 0) / agents.length);
+function toggleParam(key) {
+  const body = document.getElementById('pbody-' + key);
+  const arrow = document.getElementById('parr-' + key);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  if (arrow) arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
 
-    // Hero stats
-    setTimeout(() => {
-      animateCount(document.getElementById('stat-audits'), totalAudits);
-      animateCount(document.getElementById('stat-cq'), teamCQ, '%');
-      animateCount(document.getElementById('stat-ncf'), totalNCF);
-    }, 100);
-
-    // Insights
-    const top = sorted[0];
-    const bottom = sorted[sorted.length - 1];
-    const zeroNCF = agents.filter(a => a.ncf === 0);
-    const allParams = { ss: 0, prob: 0, sol: 0, fu: 0, tag: 0 };
-    agents.forEach(a => Object.keys(allParams).forEach(p => allParams[p] += a.params[p]));
-    const worstParam = Object.keys(allParams).reduce((a, b) => allParams[a] > allParams[b] ? a : b);
-    const avgGap = Math.abs(teamCQ - 95);
-    const zeroTag = agents.filter(a => a.params.tag === 0);
-
-    const insights = [
-      { label: '⭐ Star of the Month', value: top.name, desc: `${top.cq}% CQ · ${top.audits} audits`, color: '#7B2D8B' },
-      { label: '✅ Zero NCF Champions', value: `${zeroNCF.length} Agents`, desc: zeroNCF.map(a => a.name.split('_')[0]).join(', '), color: '#2e7d32' },
-      { label: '🎯 Needs Attention', value: bottom.name, desc: `${bottom.cq}% CQ · ${bottom.ncf} NCF`, color: '#e53935' },
-      { label: '⚠️ Most Errors', value: PARAM_LABELS[worstParam], desc: `${allParams[worstParam]} total errors team-wide`, color: '#e65100' },
-      { label: '📉 Avg Gap to Target', value: `${avgGap}%`, desc: `Team avg ${teamCQ}% vs target 95%`, color: avgGap > 10 ? '#e53935' : '#FB8C00' },
-      { label: '🏷️ Zero Tagging Errors', value: `${zeroTag.length} Agents`, desc: zeroTag.map(a => a.name.split('_')[0]).join(', ') || 'None', color: '#1565C0' },
-    ];
-
-    const grid = document.getElementById('insightsGrid');
-    grid.innerHTML = insights.map(ins => `
-      <div class="insight-card" style="border-left-color:${ins.color}">
-        <div class="insight-label">${ins.label}</div>
-        <div class="insight-value" style="color:${ins.color}">${ins.value}</div>
-        <div class="insight-desc">${ins.desc}</div>
-      </div>`).join('');
-
-    // Scores table
-    const rankColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
-    const tbody = document.getElementById('scoresBody');
-    tbody.innerHTML = sorted.map((agent, i) => {
-      const key = Object.keys(AGENTS).find(k => AGENTS[k] === agent);
-      const rankBg = i < 3 ? rankColors[i] : '#e8d5f0';
-      const rankColor = i < 3 ? '#333' : '#7B2D8B';
-      const fillPct = agent.cq;
-      const fillColor = agent.cq >= 90 ? '#2e7d32' : agent.cq >= 80 ? '#FB8C00' : '#e53935';
-      return `<tr onclick="openModal('${key}')">
-        <td><div class="rank-badge" style="background:${rankBg};color:${rankColor}">${i+1}</div></td>
-        <td><div class="agent-name-cell">
-          <div class="agent-avatar" style="background:${agent.color}">${agent.initials}</div>
-          <span style="font-weight:600">${agent.name}</span>
-        </div></td>
-        <td>${agent.audits}</td>
-        <td><span class="ncf-badge ${agent.ncf === 0 ? 'ncf-0' : 'ncf-pos'}">${agent.ncf}</span></td>
-        <td><div class="cq-bar-wrap">
-          <div class="cq-bar-bg"><div class="cq-bar-fill" style="width:${fillPct}%;background:${fillColor}"></div></div>
-          <span class="cq-val" style="color:${fillColor}">${agent.cq}%</span>
-        </div></td>
-        <td><button class="view-btn" onclick="event.stopPropagation();openModal('${key}')">View Report →</button></td>
-      </tr>`;
-    }).join('');
-
-    // Params accordion
-    const params = ['ss', 'prob', 'sol', 'fu', 'tag'];
-    const maxErrors = Math.max(...agents.flatMap(a => params.map(p => a.params[p])));
-    const accordion = document.getElementById('paramsAccordion');
-    accordion.innerHTML = params.map(p => {
-      const paramAgents = sorted.map(a => ({ agent: a, key: Object.keys(AGENTS).find(k => AGENTS[k] === a), val: a.params[p] }));
-      const total = paramAgents.reduce((s, x) => s + x.val, 0);
-      return `<div class="param-accordion">
-        <div class="param-header" onclick="toggleAccordion(this)">
-          <div class="param-dot" style="background:${PARAM_COLORS[p]}"></div>
-          <div class="param-title">${PARAM_LABELS[p]}</div>
-          <div class="param-total">${total} total errors</div>
-          <div class="param-chevron">▼</div>
-        </div>
-        <div class="param-body">
-          ${paramAgents.map(({agent, key, val}) => `
-          <div class="param-agent-row">
-            <div class="param-agent-name">${agent.name}</div>
-            <div class="param-agent-bar-bg"><div class="param-agent-bar-fill" style="width:${maxErrors > 0 ? (val/maxErrors*100) : 0}%;background:${PARAM_COLORS[p]}"></div></div>
-            <div class="param-agent-count">${val}</div>
-            ${val > 0 ? `<button class="view-cases-btn" onclick="openModal('${key}','${p}')">View Cases</button>` : '<span style="font-size:11px;color:#2e7d32">✓ Clean</span>'}
-          </div>`).join('')}
-        </div>
-      </div>`;
-    }).join('');
-
-    // Charts
-    setTimeout(renderCharts, 200);
+function countUp(el, target, suffix, duration) {
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(target * ease);
+    el.textContent = current + (suffix || '');
+    if (progress < 1) requestAnimationFrame(update);
   }
+  requestAnimationFrame(update);
+}
 
-  function toggleAccordion(header) {
-    const body = header.nextElementSibling;
-    const chevron = header.querySelector('.param-chevron');
-    body.classList.toggle('open');
-    chevron.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
-  }
+function animateBars() {
+  document.querySelectorAll('.bar-fill[data-width]').forEach(bar => {
+    const w = bar.getAttribute('data-width');
+    setTimeout(() => { bar.style.width = w + '%'; }, 200);
+  });
+}
 
-  function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.querySelector('.btn-white').textContent = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
-  }
-
-  buildDashboard();
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('[data-countup]').forEach(el => {
+      const target = parseInt(el.getAttribute('data-countup'));
+      const suffix = el.getAttribute('data-suffix') || '';
+      countUp(el, target, suffix, 1200);
+    });
+  }, 400);
+  animateBars();
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  // Render charts after a short delay to allow layout
+  setTimeout(renderCharts, 300);
+});
 </script>
 </body>
 </html>

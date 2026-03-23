@@ -21,7 +21,7 @@ function openModal(agentKey, highlightParam) {
     <div class="mm"><div class="mm-val ${errClass}">${agent.totalErrors}</div><div class="mm-lbl">Errors</div></div>
   `;
 
-  const target = 95;
+  const target = 80;
   const gap = target - agent.cq;
   const gapTxt = gap > 0 ? `${gap}% below target` : gap === 0 ? 'At target ✓' : `${Math.abs(gap)}% above target`;
   const gapCol = gap > 10 ? '#f87171' : gap > 0 ? '#e8c86a' : '#4ade80';
@@ -73,7 +73,7 @@ function openModal(agentKey, highlightParam) {
           <div style="height:100%;width:${barW}%;background:linear-gradient(90deg,#c8a846,#e8c86a);border-radius:6px;transition:width 1s ease;"></div>
           <div class="gauge-target" style="left:${targetPct}%;background:#dc2626;"></div>
         </div>
-        <div class="gauge-labels"><span>0%</span><span style="color:#dc2626;">🎯 95% target</span><span>100%</span></div>
+        <div class="gauge-labels"><span>0%</span><span style="color:#dc2626;">🎯 80% target</span><span>100%</span></div>
       </div>
       <div style="font-size:13px;color:var(--txt2);text-align:center;">
         <strong style="color:${gapCol}">${gapTxt}</strong>
@@ -94,7 +94,7 @@ function openModal(agentKey, highlightParam) {
     <div class="modal-sec-lbl">What to Focus On</div>
     <div class="better-box">
       <div class="better-item"><span class="better-arrow">›</span> Primary focus: <strong>${PARAM_LABEL[worstP]}</strong> — ${worstCount} error(s) this month. ${worstCount > 10 ? 'Needs immediate attention and targeted coaching.' : worstCount > 5 ? 'Consistent improvement sessions recommended.' : 'Keep working on this area for steady progress.'}</div>
-      <div class="better-item"><span class="better-arrow">›</span> CQ is ${gap > 0 ? `${gap}% below the 95% target` : 'at or above target'}. ${gap > 10 ? 'Significant focused effort needed.' : gap > 0 ? 'Achievable with consistent effort.' : 'Maintain this standard.'}</div>
+      <div class="better-item"><span class="better-arrow">›</span> CQ is ${gap > 0 ? `${gap}% below the 80% target` : 'at or above target'}. ${gap > 10 ? 'Significant focused effort needed.' : gap > 0 ? 'Achievable with consistent effort.' : 'Maintain this standard.'}</div>
       <div class="better-item"><span class="better-arrow">›</span> ${agent.ncf === 0 ? 'Zero NCF — excellent discipline in maintaining CaratLane-friendly interactions.' : `${agent.ncf} NCF case(s) — review flagged interactions urgently.`}</div>
     </div>
   `;

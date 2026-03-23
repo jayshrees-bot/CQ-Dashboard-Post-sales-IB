@@ -32,8 +32,8 @@ function renderCharts() {
             }
           },
           {
-            label: 'Target (95%)',
-            data: agentList.map(() => 95),
+            label: 'Target (80%)',
+            data: agentList.map(() => 80),
             type: 'line',
             borderColor: '#dc2626',
             borderWidth: 2,
@@ -52,7 +52,7 @@ function renderCharts() {
         },
         scales: {
           x: { ticks: { color: txtColor, font: { size: 10 } }, grid: { display: false } },
-          y: { min: 60, max: 108, ticks: { color: txtColor, callback: v => v + '%', font: { size: 10 } }, grid: { color: isDark() ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)' } }
+          y: { min: 40, max: 108, ticks: { color: txtColor, callback: v => v + '%', font: { size: 10 } }, grid: { color: isDark() ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)' } }
         }
       },
       plugins: [ChartDataLabels]
